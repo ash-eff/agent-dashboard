@@ -14,8 +14,10 @@ class NoteTest(TestCase):
         )
 
         cls.note = Note.objects.create(
-            agent_id=cls.user,
-            customer_name='Demo User',
+            agent=cls.user,
+            customer_name='Demo Customer',
+            customer_email='email@email.com',
+            additional_customer_information='additional information.',
             case_number='123456',
             tid_number='7890',
             case_number_provided=True,
@@ -24,8 +26,10 @@ class NoteTest(TestCase):
         )
 
     def test_note_model(self):
-        self.assertEqual(self.note.agent_id.username, 'testuser')
-        self.assertEqual(self.note.customer_name, 'Demo User')
+        self.assertEqual(self.note.agent.username, 'testuser')
+        self.assertEqual(self.note.customer_name, 'Demo Customer')
+        self.assertEqual(self.note.customer_email, 'email@email.com')
+        self.assertEqual(self.note.additional_customer_information, 'additional information.')
         self.assertEqual(self.note.case_number, '123456')
         self.assertEqual(self.note.case_number_provided, True)
         self.assertEqual(self.note.offered_additional_assistance, True)
