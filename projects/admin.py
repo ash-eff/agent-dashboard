@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Project
+from .models import Project, UserProject
 
 
 class CustomProjectAdmin(admin.ModelAdmin):
@@ -8,5 +8,10 @@ class CustomProjectAdmin(admin.ModelAdmin):
     fieldsets = [(None, {'fields': ['project_name', 'signature']})]
 
 
-admin.site.register(Project, CustomProjectAdmin)
+class CustomUserProjectAdmin(admin.ModelAdmin):
+    list_display = ['user', 'project', 'is_admin']
+    fieldsets = [(None, {'fields': ['user', 'project', 'is_admin']})]
 
+
+admin.site.register(Project, CustomProjectAdmin)
+admin.site.register(UserProject, CustomUserProjectAdmin)

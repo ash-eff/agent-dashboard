@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Local
     'accounts.apps.AccountsConfig',
     'projects.apps.ProjectsConfig',
+    'notes.apps.NotesConfig',
 ]
 
 MIDDLEWARE = [
