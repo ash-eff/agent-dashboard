@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'projects.apps.ProjectsConfig',
     'notes.apps.NotesConfig',
+    'emails.apps.EmailsConfig',
 ]
 
 MIDDLEWARE = [
