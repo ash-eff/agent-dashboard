@@ -7,32 +7,14 @@ from accounts.models import CustomUser
 class EmailTemplate(models.Model):
     name = models.CharField(max_length=100)
     body = models.TextField()
-    simpleTextFields = models.ManyToManyField('SimpleTextField', blank=True)
-    multipleChoiceFields = models.ManyToManyField('MultipleChoiceField', blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=0)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_template')
     updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='updated_template')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def replace_placeholders(self, data):
-        for placeholder, value in data.items():
-            self.body = self.body.replace(f'{{{placeholder}}}', value)
-        return self.body
-
-
-class SimpleTextField(models.Model):
-    name = models.CharField(max_length=50)
-    placeholder = models.CharField(max_length=50, blank=True)
-    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_text_field')
-    updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='updated_text_field')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        placeholder_name = self.name.casefold().replace(' ', '-')
-        self.placeholder = f'{{{placeholder_name}}}'
+    def __str__(self):
+        return f'{self.name} - {self.project.project_name}'
 
 
 class OptionChoice(models.Model):
@@ -42,17 +24,31 @@ class OptionChoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'{self.option}'
 
-class MultipleChoiceField(models.Model):
+
+class Placeholder(models.Model):
     name = models.CharField(max_length=50)
-    options = models.ManyToManyField(OptionChoice)
-    placeholder = models.CharField(max_length=50, blank=True)
-    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_multiple')
-    updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='updated_multiple')
+    placeholder_value = models.CharField(max_length=75)
+    TYPE_CHOICES = (
+        ('simple', 'Simple Text Field'),
+        ('multiple_choice', 'Multiple Choice Field'),
+        ('text', 'Full Text Field'),
+    )
+
+    type = models.CharField(max_length=15, choices=TYPE_CHOICES)
+    options = models.ManyToManyField(OptionChoice, blank=True)
+    email_template = models.ForeignKey(EmailTemplate, on_delete=models.CASCADE, related_name='placeholders')
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_placeholder')
+    updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='updated_placeholder')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         placeholder_name = self.name.casefold().replace(' ', '-')
-        self.placeholder = f'{{{placeholder_name}}}'
+        self.placeholder_value = f'{{{placeholder_name}}}'
+
+    def __str__(self):
+        return f'Placeholder in Email Template: {self.email_template.name}'

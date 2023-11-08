@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import EmailTemplate, SimpleTextField, OptionChoice, MultipleChoiceField
+from .models import EmailTemplate, OptionChoice, Placeholder
 
 
 class EmailTemplateSerializer(serializers.ModelSerializer):
@@ -8,55 +8,21 @@ class EmailTemplateSerializer(serializers.ModelSerializer):
         fields = (
             'name',
             'body',
-            'simpleTextFields',
-            'multipleChoiceFields',
             'project',
         )
         model = EmailTemplate
 
     def create(self, validated_data):
         request = self.context.get('request')
-        simple_text_fields = validated_data.pop('simpleTextFields', None)
-        multiple_choice_fields = validated_data.pop('multipleChoiceFields')
         instance = EmailTemplate(**validated_data)
         instance.created_by = request.user
-        if simple_text_fields:
-            instance.simpleTextFields.set(simple_text_fields)
-        if multiple_choice_fields:
-            instance.multipleChoiceFields.set(multiple_choice_fields)
         instance.save()
         return instance
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
         instance.body = validated_data.get('body', instance.body)
-        simple_text_fields = validated_data.get('simpleTextFields', instance.simpleTextFields.all())
-        instance.simpleTextFields.set(simple_text_fields)
-        multiple_choice_fields = validated_data.get('multipleChoiceFields', instance.multipleChoiceFields.all())
-        instance.multipleChoiceFields.set(multiple_choice_fields)
         instance.project = validated_data.get('project', instance.project)
-        instance.updated_by = request.user
-        instance.save()
-        return instance
-
-
-class SimpleTextFieldSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            'name',
-            'placeholder',
-        )
-        model = SimpleTextField
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        instance = SimpleTextField(**validated_data)
-        instance.created_by = request.user
-        instance.save()
-        return instance
-
-    def update(self, instance, validated_data):
-        request = self.context.get('request')
         instance.updated_by = request.user
         instance.save()
         return instance
@@ -82,18 +48,20 @@ class OptionChoiceSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class MultipleChoiceFieldSerializer(serializers.ModelSerializer):
+class PlaceholderSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'name',
+            'placeholder_value',
+            'type',
             'options',
-            'placeholder',
+            'email_template'
         )
-        model = MultipleChoiceField
+        model = Placeholder
 
     def create(self, validated_data):
         request = self.context.get('request')
-        instance = MultipleChoiceField(**validated_data)
+        instance = Placeholder(**validated_data)
         options = validated_data.pop('options', None)
         instance.created_by = request.user
         if options:

@@ -1,8 +1,8 @@
 from rest_framework import generics
 
-from .models import EmailTemplate, SimpleTextField, MultipleChoiceField, OptionChoice
+from .models import EmailTemplate, Placeholder, OptionChoice
 from .permissions import IsOwnerOrReadOnly
-from .serializers import EmailTemplateSerializer, SimpleTextFieldSerializer, MultipleChoiceFieldSerializer, OptionChoiceSerializer
+from .serializers import EmailTemplateSerializer, PlaceholderSerializer, OptionChoiceSerializer
 
 
 class EmailTemplateList(generics.ListCreateAPIView):
@@ -23,38 +23,56 @@ class EmailTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
         return EmailTemplate.objects.all()
 
 
-class SimpleTextFieldList(generics.ListCreateAPIView):
+class PlaceholderList(generics.ListCreateAPIView):
     permission_classes = [IsOwnerOrReadOnly, ]
-    serializer_class = SimpleTextFieldSerializer
+    serializer_class = PlaceholderSerializer
 
+    # Custom method to get the queryset for listing notes
     def get_queryset(self):
-        return SimpleTextField.objects.all()
+        return Placeholder.objects.all()
 
 
-class SimpleTextFieldDetail(generics.RetrieveUpdateDestroyAPIView):
+class PlaceholderDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrReadOnly, ]
-    serializer_class = SimpleTextFieldSerializer
+    serializer_class = PlaceholderSerializer
 
     # Custom method to get the queryset for retrieving a specific note
     def get_queryset(self):
-        return SimpleTextField.objects.all()
+        return Placeholder.objects.all()
 
 
-class MultipleChoiceFieldList(generics.ListCreateAPIView):
-    permission_classes = [IsOwnerOrReadOnly, ]
-    serializer_class = MultipleChoiceFieldSerializer
-
-    def get_queryset(self):
-        return MultipleChoiceField.objects.all()
-
-
-class MultipleChoiceFieldDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsOwnerOrReadOnly, ]
-    serializer_class = MultipleChoiceFieldSerializer
-
-    # Custom method to get the queryset for retrieving a specific note
-    def get_queryset(self):
-        return MultipleChoiceField.objects.all()
+# class SimpleTextFieldList(generics.ListCreateAPIView):
+#     permission_classes = [IsOwnerOrReadOnly, ]
+#     serializer_class = SimpleTextFieldSerializer
+#
+#     def get_queryset(self):
+#         return SimpleTextField.objects.all()
+#
+#
+# class SimpleTextFieldDetail(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = [IsOwnerOrReadOnly, ]
+#     serializer_class = SimpleTextFieldSerializer
+#
+#     # Custom method to get the queryset for retrieving a specific note
+#     def get_queryset(self):
+#         return SimpleTextField.objects.all()
+#
+#
+# class MultipleChoiceFieldList(generics.ListCreateAPIView):
+#     permission_classes = [IsOwnerOrReadOnly, ]
+#     serializer_class = MultipleChoiceFieldSerializer
+#
+#     def get_queryset(self):
+#         return MultipleChoiceField.objects.all()
+#
+#
+# class MultipleChoiceFieldDetail(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = [IsOwnerOrReadOnly, ]
+#     serializer_class = MultipleChoiceFieldSerializer
+#
+#     # Custom method to get the queryset for retrieving a specific note
+#     def get_queryset(self):
+#         return MultipleChoiceField.objects.all()
 
 
 class OptionChoiceList(generics.ListCreateAPIView):
@@ -63,7 +81,6 @@ class OptionChoiceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return OptionChoice.objects.all()
-
 
 
 class OptionChoiceDetail(generics.RetrieveUpdateDestroyAPIView):
